@@ -1,7 +1,7 @@
 from dash import html, dcc, dash_table, callback, Input, Output, State
 from dash.exceptions import PreventUpdate
 import pandas as pd
-import data_loader as dl
+from data import data_loader as dl
 
 
 df = dl.load_data()
