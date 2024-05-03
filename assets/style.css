@@ -1,0 +1,58 @@
+.container {
+    margin: 50px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 15px;
+    box-shadow: 2px 2px 2px lightgrey;
+}
+
+.nav-links {
+    margin-right: 10px;
+    text-decoration: none;
+    color: rgb(16, 114, 1);
+    font-weight: bold;
+}
+
+.header {
+    background-color: #333;
+    padding: 10px 20px;
+    color: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.header a {
+    color: white;
+    padding: 0 15px;
+    text-decoration: none;
+}
+
+/* You may want to add :hover styles for the links as well */
+.header a:hover {
+    text-decoration: underline;
+}
+
+.cards {
+    text-align:center;
+    padding: 20px;
+    margin: 10px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 2px 2px 10px #ccc;
+    cursor: pointer;     
+    width: auto;
+    flex: 1;  
+    color: white;
+    background-color: rgb(10, 49, 3);
+}
+
+.home-graph {
+    width: 100%;
+    display: inline-block;
+    margin: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 2px 2px 10px #ccc;
+
+}
