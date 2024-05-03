@@ -7,7 +7,7 @@ from data import data_loader as dl
 df = dl.load_data()
 
 
-app.layout = html.Div([
+layout = html.Div([
 
     html.H1('Table View Page'),
     # Your DataTable and associated components would go here
@@ -98,7 +98,7 @@ app.layout = html.Div([
 #     raise PreventUpdate
 
 
-@app.callback(
+@callback(
     Output('state-dropdown', 'options'),
     Input('country-dropdown', 'value')
 )
