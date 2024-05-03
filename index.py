@@ -4,7 +4,7 @@ from app import app
 import callbacks  # Import to register callbacks
 import layouts
 
-layout = html.Div([
+app.layout = html.Div([
     layouts.navbar,
     dcc.Location(id='url', refresh=False),
     html.Div(id='page-content')
