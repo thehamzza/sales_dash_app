@@ -1,7 +1,6 @@
 from dash import html, dcc
 from dash.dependencies import Input, Output
 from app import app
-import callbacks  # Import to register callbacks
 import layouts
 
 app.layout = html.Div([

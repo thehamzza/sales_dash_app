@@ -1,3 +1,143 @@
+# from dash import html, dcc, dash_table, callback, Input, Output, State
+# from dash.exceptions import PreventUpdate
+# from data import data_loader as dl
+
+
+# df = dl.load_data()
+
+
+
+
+# layout = html.Div([
+
+#     html.H1('Table View Page'),
+#     # Your DataTable and associated components would go here
+#     html.P('Welcome to the Table View Page!'),
+    
+#         dcc.Dropdown(
+#             id='country-dropdown',
+#             options=[{'label': i, 'value': i} for i in sorted(df['Country/Region'].unique())],
+#             #value=None,
+#             placeholder="Select a Country",
+#             clearable = True
+#         ),
+#         dcc.Dropdown(
+#             id='state-dropdown',
+#             options=[{'label': i, 'value': i} for i in df['State'].unique()],
+#             #value=None,
+#             #disabled=True,  # Initially disabled until a country is selected
+#             placeholder="Select a State"
+#         ),
+#         dcc.Dropdown(
+#             id='city-dropdown',
+#             options=[{'label': i, 'value': i} for i in df['City'].unique()],
+#             #value=None,
+#             #disabled=True,  # Initially disabled until a country is selected
+#             placeholder="Select a City"
+#         ),
+
+
+#         dash_table.DataTable(
+#             id='data-table',
+#             columns=[{"name": i, "id": i} for i in df.columns],
+#             data=df.to_dict('records'),
+#             filter_action='native',
+#             sort_action='native',
+#             page_size=10,
+#             editable=False
+#         ),
+#         html.Div([
+#             dcc.Input(id='input-country', type='text', placeholder='Country'),
+#             dcc.Input(id='input-state', type='text', placeholder='State'),
+#             dcc.Input(id='input-city', type='text', placeholder='City'),
+#             dcc.Input(id='input-sales', type='number', placeholder='Sales'),
+#             dcc.Input(id='input-profit', type='number', placeholder='Profit'),
+#             html.Button('Add', id='add-button', n_clicks=0)
+#         ]),
+#         html.Div(id='add-output')
+#     ])
+
+#----- old code ------------------
+
+# @callback(
+#     Output('state-dropdown', 'options'),
+#     Input('country-dropdown', 'value'),
+# )
+# def update_state_options(selected_country):
+#     if not selected_country:
+#         return []
+#     filtered_df = df[df['Country/Region'] == selected_country].dropna(subset=['State'])
+#     states = [{'label': state, 'value': state} for state in sorted(filtered_df['State'].unique())]
+#     return states
+
+
+
+# @callback(
+#     [Output('city-dropdown', 'options'),
+#      Output('city-dropdown', 'disabled')],
+#     [Input('state-dropdown', 'value')],
+#     [State('country-dropdown', 'value')]
+# )
+# def set_cities_options(selected_state, selected_country):
+#     if not selected_state or not selected_country:
+#         return [], True
+#     filtered_df = df[(df['Country/Region'] == selected_country) & (df['State'] == selected_state)]
+#     cities = [{'label': i, 'value': i} for i in filtered_df['City'].unique()]
+#     return cities, False
+
+
+# # Add a new callback here to filter the table based on dropdowns
+# @callback(
+#     Output('data-table', 'data'),
+#     [Input('country-dropdown', 'value'),
+#      Input('state-dropdown', 'value'),
+#      Input('city-dropdown', 'value')],
+# )
+# def filter_table(selected_country, selected_state, selected_city):
+#     # If no country is selected, display all data
+#     if not selected_country:
+#         return df.to_dict('records')
+#     # Filter by selected country
+#     filtered_df = df[df['Country/Region'] == selected_country]
+#     # Further filter by selected state if one is selected
+#     if selected_state:
+#         filtered_df = filtered_df[filtered_df['State'] == selected_state]
+#     # Further filter by selected city if one is selected
+#     if selected_city:
+#         filtered_df = filtered_df[filtered_df['City'] == selected_city]
+#     return filtered_df.to_dict('records')
+
+
+
+# #Callback for adding data to the table
+# @callback(
+#     Output('data-table', 'data'),
+#     [Input('add-button', 'n_clicks'),
+#      Input('input-country', 'value'),
+#      Input('input-state', 'value'),
+#      Input('input-city', 'value'),
+#      Input('input-sales', 'value'),
+#      Input('input-profit', 'value')],
+     
+#     State('data-table', 'data')
+#     # State('input-country', 'value'),
+#     # State('input-state', 'value'),
+#     # State('input-city', 'value'),
+#     # State('input-sales', 'value'),
+#     # State('input-profit', 'value')
+# )
+# def add_data_to_table(n_clicks, rows, country, state, city, sales, profit):
+#     if n_clicks > 0:
+#         if not all([country, state, city, sales, profit]):
+#             raise PreventUpdate
+#         new_row = {'Country': country, 'State': state, 'City': city, 'Sales': sales, 'Profit': profit}
+#         if new_row not in rows:
+#             rows.append(new_row)
+#         return rows
+#     raise PreventUpdate
+
+
+
 import dash
 from dash import html, dcc, dash_table, callback, Input, Output, State
 from dash.exceptions import PreventUpdate
@@ -6,6 +146,41 @@ from data import data_loader as dl
 
 
 data = dl.load_data()
+
+def select_columns(dataframe, column_names):
+    """
+    Select specific columns from a DataFrame and return a new DataFrame.
+
+    Parameters:
+    - dataframe: pd.DataFrame from which to select columns.
+    - column_names: list of str, the names of the columns to select.
+
+    Returns:
+    - pd.DataFrame containing only the specified columns.
+    """
+    # Ensure that all specified columns exist in the DataFrame
+    columns_to_select = [column for column in column_names if column in dataframe.columns]
+    
+    # If any of the requested columns are missing, print a message
+    missing_columns = set(column_names) - set(columns_to_select)
+    if missing_columns:
+        print(f"Warning: The following columns were not found in the DataFrame: {missing_columns}")
+
+    # Select and return the new DataFrame with only the specified columns
+    return dataframe[columns_to_select]
+
+# Example usage:
+print(data.head())  # Print the first few rows of the old DataFrame to verify
+
+df = data #full data
+selected_columns = ['Row ID', 'Country/Region', 'State', 
+                    'City', 'Region', 'Product Name','Category', 'Sub-Category',
+                      'Sales','Quantity', 'Profit']  # Specify your desired columns
+
+new_df = select_columns(df, selected_columns)
+print(new_df.head())  # Print the first few rows of the new DataFrame to verify
+
+data = new_df
 
 # App layout
 layout = html.Div([
@@ -21,7 +196,7 @@ layout = html.Div([
             id='state-dropdown',
             options=[],
             value=None,
-            placeholder='Select a state'
+            placeholder='Select a state',
         ),
         dcc.Dropdown(
             id='city-dropdown',
@@ -38,16 +213,35 @@ layout = html.Div([
             filter_action='native',
             sort_action='native',
             page_size=10,
-            editable=False
+            editable=False,
+        #     style_cell_conditional=[
+        #     {'if': {'column_id': 'Product Name'},  
+        #      'width': '50px'},  
+        # ],
+        # style_table={'overflowX': 'auto'}  # Optional: to add horizontal scroll
         ),
-        html.Div([
-            dcc.Input(id='input-country', type='text', placeholder='Country'),
-            dcc.Input(id='input-state', type='text', placeholder='State'),
-            dcc.Input(id='input-city', type='text', placeholder='City'),
-            dcc.Input(id='input-sales', type='number', placeholder='Sales'),
-            dcc.Input(id='input-profit', type='number', placeholder='Profit'),
-            html.Button('Add', id='add-button', n_clicks=0)
-        ]),
+        
+    html.Div([
+        dcc.Input(id='input-product-name', type='text', placeholder='Product Name', style={'marginRight': '10px'}),
+        dcc.Input(id='input-category', type='text', placeholder='Category', style={'marginRight': '10px'}),
+        dcc.Input(id='input-sub-category', type='text', placeholder='Sub-Category', style={'marginRight': '10px'}),
+        dcc.Input(id='input-sales', type='number', placeholder='Sales', style={'marginRight': '10px'}),
+        dcc.Input(id='input-quantity', type='number', placeholder='Quantity', style={'marginRight': '10px'}),
+        dcc.Input(id='input-profit', type='number', placeholder='Profit', style={'marginRight': '10px'}),
+        html.Button('Add Entry', id='add-entry-button', n_clicks=0,
+                     style={
+                        'backgroundColor': '#007BFF',  # Bootstrap primary blue
+                        'color': 'white',  # Text color
+                        'border': 'none',
+                        'padding': '10px 20px',  # Padding inside the button, vertical and horizontal
+                        'fontSize': '16px',  # Text size
+                        'borderRadius': '5px',  # Rounded corners
+                        'cursor': 'pointer',  # Cursor indicates the element is clickable
+                        'transition': 'background-color 0.3s',  # Smooth transition for hover effect
+                          })
+        ], 
+        style={'display': 'flex', 'flexDirection': 'row', 'padding': '10px'}),
+
     ]),
     html.Div(id='table-container')
 ])
@@ -90,11 +284,13 @@ def update_city_dropdown(selected_state):
 
 # Callback to update table based on selected filters
 @callback(
-    Output('data-table', 'data'),
+    Output('data-table', 'data', allow_duplicate=True),
     [Input('country-dropdown', 'value'),
      Input('state-dropdown', 'value'),
-     Input('city-dropdown', 'value')]
+     Input('city-dropdown', 'value')],
+     prevent_initial_call='initial_duplicate'
 )
+
 def update_table(selected_country, selected_state, selected_city):
     filtered_data = data
 
@@ -110,37 +306,49 @@ def update_table(selected_country, selected_state, selected_city):
     return filtered_data.to_dict('records')
 
 
+#------ new code  -----
 
+# Callback to add new data to the table
+# keeps country , state and city the same as before, rest entries NAN
+@callback(
+    Output('data-table', 'data', allow_duplicate=True),
+    [Input('add-entry-button', 'n_clicks')],
+    [State('data-table', 'data'),
+     State('country-dropdown', 'value'),
+     State('state-dropdown', 'value'),
+     State('city-dropdown', 'value'),
+     State('input-product-name', 'value'),
+     State('input-category', 'value'),
+     State('input-sub-category', 'value'),
+     State('input-sales', 'value'),
+     State('input-quantity', 'value'),
+     State('input-profit', 'value')],
+     prevent_initial_call='initial_duplicate'
+)
+def add_data(n_clicks, rows, country, state, city, product_name, category, sub_category, sales, quantity, profit):
+    if n_clicks > 0:
+        # Create a new row with the selected and inputted values
+        new_row = {
+            'Country/Region': country,
+            'State': state,
+            'City': city,
+            'Product Name': product_name,
+            'Category': category,
+            'Sub-Category': sub_category,
+            'Sales': sales,
+            'Quantity': quantity,
+            'Profit': profit
+        }
+        
+        # Fill other columns with NaN if they exist in the dataframe
+        all_columns = set(rows[0].keys())  # Get all column names from current data
+        for col in all_columns:
+            if col not in new_row:
+                new_row[col] = pd.NA  # Using pandas NA for correct handling of missing data
+        
+        # Append to the existing data
+        rows.append(new_row)
+        return rows
 
-
-# # Callback to add data to the table
-# @callback(
-#     Output('data-table', 'data'),
-#     [Input('add-button', 'n_clicks')],
-#     [State('data-table', 'data'),
-#      State('input-country', 'value'),
-#      State('input-state', 'value'),
-#      State('input-city', 'value'),
-#      State('input-sales', 'value'),
-#      State('input-profit', 'value')]
-# )
-# def add_data_to_table(n_clicks, rows, input_country, input_state, input_city, input_sales, input_profit):
-#     if n_clicks > 0:
-#         if not all([input_country, input_state, input_city, input_sales, input_profit]):
-#             raise PreventUpdate
-#         # Here we check for duplicates. You need to define how you want to handle duplicates.
-#         # For example, you might use a combination of columns as a composite primary key.
-#         existing_ids = {(row['Country/Region'], row['State'], row['City']) for row in rows}
-#         if (input_country, input_state, input_city) in existing_ids:
-#             raise PreventUpdate  # This prevents adding the new row if it's a duplicate
-#         new_row = {
-#             'Country/Region': input_country,
-#             'State': input_state,
-#             'City': input_city,
-#             'Sales': input_sales,
-#             'Profit': input_profit
-#         }
-#         rows.append(new_row)
-#         return rows
-#     return dash.no_update
-
+    # If no clicks, do not update
+    return dash.no_update
