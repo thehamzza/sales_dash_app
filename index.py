@@ -6,7 +6,6 @@ import layouts
 
 app.layout = html.Div([
     layouts.navbar,
-    dcc.Location(id='url', refresh=False),
     html.Div(id='page-content')
 ])
 

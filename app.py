@@ -8,7 +8,7 @@ import plotly.express as px
 from dash.dependencies import Input, Output
 
 
-app = Dash(__name__)
+app = Dash(__name__, suppress_callback_exceptions=True)
 
 
 # # Define the layout of the app

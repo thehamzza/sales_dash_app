@@ -5,42 +5,36 @@ import pandas as pd
 from data import data_loader as dl
 
 
-df = dl.load_data()
+data = dl.load_data()
 
-
+# App layout
 layout = html.Div([
-
-    html.H1('Table View Page'),
-    # Your DataTable and associated components would go here
-    html.P('Welcome to the Table View Page!'),
-    
+    html.H1("Data Table with Filters"),
+    html.Div([
         dcc.Dropdown(
             id='country-dropdown',
-            options=[{'label': i, 'value': i} for i in sorted(df['Country/Region'].unique())],
+            options=[{'label': country, 'value': country} for country in data['Country/Region'].unique()],
             value=None,
-            placeholder="Select a Country",
-            clearable = True
+            placeholder='Select a country'
         ),
         dcc.Dropdown(
             id='state-dropdown',
-            options=[{'label': i, 'value': i} for i in df['State'].unique()],
+            options=[],
             value=None,
-            #disabled=True,  # Initially disabled until a country is selected
-            placeholder="Select a State"
+            placeholder='Select a state'
         ),
         dcc.Dropdown(
             id='city-dropdown',
-            options=[{'label': i, 'value': i} for i in df['City'].unique()],
+            options=[],
             value=None,
-            #disabled=True,  # Initially disabled until a country is selected
-            placeholder="Select a City"
+            placeholder='Select a city',
+            disabled=True
         ),
-
-
+    
         dash_table.DataTable(
             id='data-table',
-            columns=[{"name": i, "id": i} for i in df.columns],
-            data=df.to_dict('records'),
+            columns=[{"name": i, "id": i} for i in data.columns],
+            data=data.to_dict('records'),
             filter_action='native',
             sort_action='native',
             page_size=10,
@@ -54,119 +48,99 @@ layout = html.Div([
             dcc.Input(id='input-profit', type='number', placeholder='Profit'),
             html.Button('Add', id='add-button', n_clicks=0)
         ]),
-        html.Div(id='add-output')
-    ])
-
-# # Callbacks for dynamic dropdowns
-# @callback(
-#     Output('state-dropdown', 'options'),
-#     Input('country-dropdown', 'value')
-# )
-# def set_states_options(selected_country):
-#     if not selected_country:
-#         return []
-#     return [{'label': i, 'value': i} for i in df[df['Country'] == selected_country]['State'].unique()]
-
-# @callback(
-#     Output('city-dropdown', 'options'),
-#     Input('state-dropdown', 'value'),
-#     State('country-dropdown', 'value')
-# )
-# def set_cities_options(selected_state, selected_country):
-#     if not selected_state or not selected_country:
-#         return []
-#     return [{'label': i, 'value': i} for i in df[(df['Country'] == selected_country) & (df['State'] == selected_state)]['City'].unique()]
-
-# # Callback for adding data to the table
-# @callback(
-#     Output('data-table', 'data'),
-#     Input('add-button', 'n_clicks'),
-#     State('data-table', 'data'),
-#     State('input-country', 'value'),
-#     State('input-state', 'value'),
-#     State('input-city', 'value'),
-#     State('input-sales', 'value'),
-#     State('input-profit', 'value')
-# )
-# def add_data_to_table(n_clicks, rows, country, state, city, sales, profit):
-#     if n_clicks > 0:
-#         if not all([country, state, city, sales, profit]):
-#             raise PreventUpdate
-#         new_row = {'Country': country, 'State': state, 'City': city, 'Sales': sales, 'Profit': profit}
-#         if new_row not in rows:
-#             rows.append(new_row)
-#         return rows
-#     raise PreventUpdate
+    ]),
+    html.Div(id='table-container')
+])
 
 
+
+
+
+# Callback to update state dropdown options based on selected country
 @callback(
     Output('state-dropdown', 'options'),
-    Input('country-dropdown', 'value')
+    [Input('country-dropdown', 'value')]
 )
-def update_state_options(selected_country):
-    if not selected_country:
+def update_state_dropdown(selected_country):
+    if selected_country is None:
         return []
-    filtered_df = df[df['Country/Region'] == selected_country].dropna(subset=['State'])
-    print ("filtered_df: ", filtered_df)
-    states = [{'label': state, 'value': state} for state in sorted(filtered_df['State'].unique())]
-    print ("states: ", states)
-    return states
-
-
+    else:
+        states = data[data['Country/Region'] == selected_country]['State'].unique()
+        return [{'label': state, 'value': state} for state in states]
+    
 
 @callback(
-    [Output('city-dropdown', 'options'),
-     Output('city-dropdown', 'disabled')],
-    [Input('state-dropdown', 'value')],
-    [State('country-dropdown', 'value')]
+    Output('city-dropdown', 'disabled'),
+    [Input('state-dropdown', 'value')]
 )
-def set_cities_options(selected_state, selected_country):
-    if not selected_state or not selected_country:
-        return [], True
-    filtered_df = df[(df['Country/Region'] == selected_country) & (df['State'] == selected_state)]
-    cities = [{'label': i, 'value': i} for i in filtered_df['City'].unique()]
-    return cities, False
+def update_city_dropdown_disabled(selected_state):
+    return selected_state is None
 
+# Callback to update city dropdown options based on selected state
+@callback(
+    Output('city-dropdown', 'options'),
+    [Input('state-dropdown', 'value')]
+)
+def update_city_dropdown(selected_state):
+    if selected_state is None:
+        return []
+    else:
+        cities = data[data['State'] == selected_state]['City'].unique()
+        return [{'label': city, 'value': city} for city in cities]
 
-# Add a new callback here to filter the table based on dropdowns
+# Callback to update table based on selected filters
 @callback(
     Output('data-table', 'data'),
     [Input('country-dropdown', 'value'),
      Input('state-dropdown', 'value'),
-     Input('city-dropdown', 'value')],
+     Input('city-dropdown', 'value')]
 )
-def filter_table(selected_country, selected_state, selected_city):
-    # If no country is selected, display all data
-    if not selected_country:
-        return df.to_dict('records')
-    # Filter by selected country
-    filtered_df = df[df['Country/Region'] == selected_country]
-    # Further filter by selected state if one is selected
-    if selected_state:
-        filtered_df = filtered_df[filtered_df['State'] == selected_state]
-    # Further filter by selected city if one is selected
-    if selected_city:
-        filtered_df = filtered_df[filtered_df['City'] == selected_city]
-    return filtered_df.to_dict('records')
+def update_table(selected_country, selected_state, selected_city):
+    filtered_data = data
+
+    if selected_country is not None:
+        filtered_data = filtered_data[filtered_data['Country/Region'] == selected_country]
+
+    if selected_state is not None:
+        filtered_data = filtered_data[filtered_data['State'] == selected_state]
+
+    if selected_city is not None:
+        filtered_data = filtered_data[filtered_data['City'] == selected_city]
+
+    return filtered_data.to_dict('records')
 
 
 
-def add_data_to_table(n_clicks, rows, input_country, input_state, input_city, input_sales, input_profit):
-    if n_clicks > 0:
-        if not all([input_country, input_state, input_city, input_sales, input_profit]):
-            raise PreventUpdate
-        # Here we check for duplicates. You need to define how you want to handle duplicates.
-        # For example, you might use a combination of columns as a composite primary key.
-        existing_ids = {(row['Country'], row['State'], row['City']) for row in rows}
-        if (input_country, input_state, input_city) in existing_ids:
-            raise PreventUpdate  # This prevents adding the new row if it's a duplicate
-        new_row = {
-            'Country/Region': input_country,
-            'State': input_state,
-            'City': input_city,
-            'Sales': input_sales,
-            'Profit': input_profit
-        }
-        rows.append(new_row)
-        return rows
-    return dash.no_update
+
+
+# # Callback to add data to the table
+# @callback(
+#     Output('data-table', 'data'),
+#     [Input('add-button', 'n_clicks')],
+#     [State('data-table', 'data'),
+#      State('input-country', 'value'),
+#      State('input-state', 'value'),
+#      State('input-city', 'value'),
+#      State('input-sales', 'value'),
+#      State('input-profit', 'value')]
+# )
+# def add_data_to_table(n_clicks, rows, input_country, input_state, input_city, input_sales, input_profit):
+#     if n_clicks > 0:
+#         if not all([input_country, input_state, input_city, input_sales, input_profit]):
+#             raise PreventUpdate
+#         # Here we check for duplicates. You need to define how you want to handle duplicates.
+#         # For example, you might use a combination of columns as a composite primary key.
+#         existing_ids = {(row['Country/Region'], row['State'], row['City']) for row in rows}
+#         if (input_country, input_state, input_city) in existing_ids:
+#             raise PreventUpdate  # This prevents adding the new row if it's a duplicate
+#         new_row = {
+#             'Country/Region': input_country,
+#             'State': input_state,
+#             'City': input_city,
+#             'Sales': input_sales,
+#             'Profit': input_profit
+#         }
+#         rows.append(new_row)
+#         return rows
+#     return dash.no_update
+

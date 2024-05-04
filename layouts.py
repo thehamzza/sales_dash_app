@@ -1,8 +1,6 @@
 from pages import home, table_view, graph_view
 from dash import html, dcc
 
-# Assume each module returns a layout function or a layout property
-
 # Navigation bar
 navbar = html.Div([
 
