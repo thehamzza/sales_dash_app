@@ -77,3 +77,7 @@ To run the application:
 2. Clone the repository and navigate to the app directory.
 3. Run the command `python3 index.py` to start the server.
 4. Open a web browser and go to `http://127.0.0.1:8050/` to access the app.
+![Screenshot 2024-05-06 at 19-57-30 Superstores Dash App](https://github.com/thehamzza/sales_dash_app/assets/45312947/f1de92be-b0dc-4cfa-8c65-3a9846523e9f)
+
+
+
