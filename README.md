@@ -85,5 +85,6 @@ To run the application:
 
 ![Screenshot 2024-05-06 at 19-57-30 Superstores Dash App](https://github.com/thehamzza/sales_dash_app/assets/45312947/f1de92be-b0dc-4cfa-8c65-3a9846523e9f)
 
+![Screenshot 2024-05-06 at 20-05-37 Superstores Dash App](https://github.com/thehamzza/sales_dash_app/assets/45312947/6488782f-01ab-4731-a879-0904f1970a7a)
 
 
