@@ -24,10 +24,11 @@ To run this application, follow these steps:
    pip3 install -r requirements.txt
 
 
-#### 3. run index.py file, because it's the main app file
    ```bash
    python3 index.py
 
+
+#### NOTE: Run index.py file, because it's the main app file
 ## OVER VIEW
 
 ### Page 1: Home/ Landing Page
