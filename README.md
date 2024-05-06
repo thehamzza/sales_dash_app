@@ -12,17 +12,15 @@ To run this application, follow these steps:
 
 1. Clone the repository or download the files.
 
-2. Create a virtual Python environment:
+2. Create a virtual Python environment, activate it, and install the required packages:
+   
    ```bash
    python -m venv /path/to/new/virtual/environment
+   
+   source /path/to/new/virtual/environment/bin/activate
+   
+   pip3 install -r requirements.txt
 
-Activate the virtual environment:
-```bash
-source /path/to/new/virtual/environment/bin/activate
-
-Install the required packages:
-```bash
-pip3 install -r requirements.txt
 
 ## OVER VIEW
 
