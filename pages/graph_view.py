@@ -181,7 +181,7 @@ def update_bubble_chart(drop_down_1_value, drop_down_2_value, drop_down_3_value)
         .groupby(drop_down_3_value)
         .apply(lambda df: df.select_dtypes(include= 'number').sum())
     )
-    scaledProfits = (df2['Profit'] - df2['Profit'].min()) / df2['Profit'].max() * 100 + 10
+    scaledProfits = (df2['Profit'] - df2['Profit'].min()) / df2['Profit'].max() * 100 + 10 #multiplying by 100 and adding 10 is purely for scaling, normalization and visualization purposes.
     
     fig = go.Figure()
     fig.add_trace(
