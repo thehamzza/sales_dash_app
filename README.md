@@ -5,7 +5,9 @@
 ## Overview
 This Dash application analyzes Superstore sales data. 
 The dataset used for this project can be found in the "Sample - Superstore.xlsx" file.
-link: https://datawonders.atlassian.net/wiki/spaces/TABLEAU/blog/2022/10/26/1953431553/Where+Can+I+Find+Superstore+Sales#Workbooks-and-Data-Sources
+
+link: 
+https://datawonders.atlassian.net/wiki/spaces/TABLEAU/blog/2022/10/26/1953431553/Where+Can+I+Find+Superstore+Sales#Workbooks-and-Data-Sources
 
 ## Installation
 To run this application, follow these steps:
