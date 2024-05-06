@@ -1,81 +1,3 @@
-# import dash
-# from dash import html, dcc, Input, Output, callback
-# from dash import dash_table 
-# import pandas as pd
-# from datetime import datetime as dt
-# from data import data_loader as dl
-
-
-# df = dl.load_data()
-# #keeping this column name for simplicity
-# date='Order Date'
-
-# df[date] = pd.to_datetime(df[date])  # Ensure the date column is in datetime format
-
-
-# # Define the layout
-# layout = html.Div([
-#     html.H1("Data Analysis Dashboard"),
-#     dcc.DatePickerRange(
-#         id='date-picker-range',
-#         min_date_allowed=df[date].min(),
-#         max_date_allowed=df[date].max(),
-#         start_date=df[date].min(),
-#         end_date=df[date].max()
-#     ),
-#     dcc.Dropdown(
-#         id='granularity-dropdown',
-#         options=[
-#             {'label': 'Week', 'value': 'W'},
-#             {'label': 'Month', 'value': 'M'},
-#             {'label': 'Quarter', 'value': 'Q'},
-#             {'label': 'Year', 'value': 'Y'}
-#         ],
-#         value='M',  # Default to Month
-#         clearable=False
-#     ),
-#     html.Div(id='filtered-data-display'),
-#     dcc.Graph(id='data-graph')
-# ])
-
-# # Callback to filter data and update the table and graph
-# @callback(
-#     [Output('filtered-data-display', 'children'),
-#      Output('data-graph', 'figure')],
-#     [Input('date-picker-range', 'start_date'),
-#      Input('date-picker-range', 'end_date'),
-#      Input('granularity-dropdown', 'value')]
-# )
-# def update_output(start_date, end_date, granularity):
-#     # Filter data based on the date range
-#     mask = (df[date] >= start_date) & (df[date] <= end_date)
-#     filtered_df = df.loc[mask]
-
-#     # Resample data based on selected granularity
-#     if granularity:
-#         filtered_df.set_index(date, inplace=True)
-#         numeric_cols = filtered_df.select_dtypes(include=['number'])  # Ensure only numeric columns are processed
-#         if not numeric_cols.empty:
-#             aggregated_df = numeric_cols.resample(granularity).mean().reset_index()
-#         else:
-#             return "No numeric data available for aggregation", {}
-
-#     # Display the filtered DataFrame (limited to 5 rows)
-#     display_df = aggregated_df.head(5).to_dict('records')
-#     display_columns = [{'name': col, 'id': col} for col in aggregated_df.columns]
-
-#     # Prepare a simple line graph of the aggregated data
-#     # Assuming the first numeric column is what you want to plot
-#     first_numeric_col = numeric_cols.columns[0] if not numeric_cols.empty else None
-#     fig = {
-#         'data': [{'x': aggregated_df[date], 'y': aggregated_df[first_numeric_col], 'type': 'line'}],
-#         'layout': {'title': 'Aggregated Data'}
-#     }
-
-#     return [dash_table.DataTable(data=display_df, columns=display_columns), fig]
-
-
-
 import dash
 from dash import html, dcc, Input, Output, callback
 from dash import dash_table
@@ -83,24 +5,34 @@ import pandas as pd
 from datetime import datetime as dt
 from data import data_loader as dl
 
+import plotly.graph_objs as go
+
 df = dl.load_data()
 
 # Convert dates to datetime and calculate Days to Ship
-df['Order Date'] = pd.to_datetime(df['Order Date'])
-df['Ship Date'] = pd.to_datetime(df['Ship Date'])
+df['Order Date'  ] = pd.to_datetime(df['Order Date'])
+df['Ship Date'   ] = pd.to_datetime(df['Ship Date'])
 df['Days to Ship'] = (df['Ship Date'] - df['Order Date']).dt.days
 df['Profit Ratio'] = df['Profit'] / df['Sales']
 
+# TODO calculate these columns as well
+
+# Calculate Returns based on negative profit assumption
+df['Returns'] = df['Profit'].apply(lambda x: abs(x) if x < 0 else 0)
+
+
 # Define the layout
 layout = html.Div([
-    html.H1("Data Analysis Dashboard"),
+    html.H1("Graph Analysis Page"),
     dcc.DatePickerRange(
         id='date-picker-range',
         min_date_allowed=df['Order Date'].min(),
         max_date_allowed=df['Ship Date'].max(),
         start_date=df['Order Date'].min(),
-        end_date=df['Ship Date'].max()
-    ),
+        end_date=df['Ship Date'].max(),
+        #className='date-picker'
+        className='dropdown' #for css
+    ), 
     dcc.Dropdown(
         id='granularity-dropdown',
         options=[
@@ -110,10 +42,65 @@ layout = html.Div([
             {'label': 'Year', 'value': 'Y'}
         ],
         value='M',  # Default to Month
-        clearable=False
+        clearable=False,
+        className='dropdown'
     ),
     html.Div(id='filtered-data-display'),
-    dcc.Graph(id='data-graph')
+    dcc.Graph(id='data-graph'),
+
+    html.Div(
+        id= 'bubble-chart',
+        children= [
+            dcc.Dropdown(
+                id='bubble-dropdown-1',
+                value='Days to Ship',
+                clearable=False,
+                options= [
+                    {'label': 'Days to Ship', 'value': 'Days to Ship',},
+                    {'label': 'Discount'    , 'value': 'Discount'    ,},
+                    {'label': 'Profit'      , 'value': 'Profit'      ,},
+                    {'label': 'Profit Ratio', 'value': 'Profit Ratio',},
+                    {'label': 'Quantity'    , 'value': 'Quantity'    ,},
+                    {'label': 'Returns'     , 'value': 'Returns'     ,},
+                    {'label': 'Sales'       , 'value': 'Sales'       ,},
+                ],
+                className='dropdown'
+            ),
+            dcc.Dropdown(
+                id='bubble-dropdown-2',
+                value='Discount',
+                clearable=False,
+                options= [
+                    {'label': 'Days to Ship', 'value': 'Days to Ship',},
+                    {'label': 'Discount'    , 'value': 'Discount'    ,},
+                    {'label': 'Profit'      , 'value': 'Profit'      ,},
+                    {'label': 'Profit Ratio', 'value': 'Profit Ratio',},
+                    {'label': 'Quantity'    , 'value': 'Quantity'    ,},
+                    {'label': 'Returns'     , 'value': 'Returns'     ,},
+                    {'label': 'Sales'       , 'value': 'Sales'       ,},
+                ],
+                className='dropdown'
+            ),
+            dcc.Dropdown(
+                id='bubble-dropdown-3',
+                value='Segment',
+                clearable=False,
+                options= [
+                    {'label': 'Segment'      , 'value': 'Segment'      ,},
+                    {'label': 'Ship Mode'    , 'value': 'Ship Mode'    ,},
+                    {'label': 'Customer Name', 'value': 'Customer Name',},
+                    {'label': 'Category'     , 'value': 'Category'     ,},
+                    {'label': 'Sub-Category' , 'value': 'Sub-Category' ,},
+                    {'label': 'Product Name' , 'value': 'Product Name' ,},
+                ],
+                className='dropdown'
+            ),
+            
+            dcc.Graph(
+                id= 'bubble-chart-graph'
+            )
+        ]
+    ),
 ])
 
 
@@ -158,4 +145,69 @@ def update_graph(start_date, end_date, granularity):
         }
     }
 
+    return fig
+
+@callback(
+        [Output('bubble-dropdown-1', 'options'),
+         Output('bubble-dropdown-2', 'options')],
+        [Input('bubble-dropdown-1', 'value'),
+         Input('bubble-dropdown-2', 'value')]
+)
+def update_bubble_dropdowns(drop_down_1_value, drop_down_2_value):
+    options = [
+        {'label': 'Days to Ship', 'value': 'Days to Ship',},
+        {'label': 'Discount'    , 'value': 'Discount'    ,},
+        {'label': 'Profit'      , 'value': 'Profit'      ,},
+        {'label': 'Profit Ratio', 'value': 'Profit Ratio',},
+        {'label': 'Quantity'    , 'value': 'Quantity'    ,},
+        {'label': 'Returns'     , 'value': 'Returns'     ,},
+        {'label': 'Sales'       , 'value': 'Sales'       ,},
+    ]
+    return (
+        [option for option in options if option['value'] != drop_down_2_value],
+        [option for option in options if option['value'] != drop_down_1_value]
+    )
+
+
+@callback(
+        Output('bubble-chart-graph', 'figure'),
+        [Input('bubble-dropdown-1', 'value'),
+         Input('bubble-dropdown-2', 'value'),
+         Input('bubble-dropdown-3', 'value')]
+)
+def update_bubble_chart(drop_down_1_value, drop_down_2_value, drop_down_3_value):
+    global df
+    df2 = ( df
+        .groupby(drop_down_3_value)
+        .apply(lambda df: df.select_dtypes(include= 'number').sum())
+    )
+    scaledProfits = (df2['Profit'] - df2['Profit'].min()) / df2['Profit'].max() * 100 + 10
+    
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scatter(
+            x     = df2[drop_down_1_value],
+            y     = df2[drop_down_2_value],
+            text  = df2.index,
+            mode  = 'markers',
+            marker= dict(                
+                size      = scaledProfits,
+                color     = scaledProfits,
+                colorscale= 'Viridis',
+                showscale = True
+            ),
+            hoverinfo='text+x+y',
+            hovertemplate=(
+                "<b>%{text}</b><br>" +
+                drop_down_1_value + ": %{x}<br>" +  # Correct use of variables within hovertemplate
+                drop_down_2_value + ": %{y}<br>" +
+                "Scaled Profit: %{marker.size}<extra></extra>"  
+        )
+    )
+    )
+    fig.update_layout(
+        title= 'Bubble Chart',
+        xaxis= dict(title=drop_down_1_value),
+        yaxis= dict(title=drop_down_2_value)
+    )
     return fig

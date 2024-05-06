@@ -7,11 +7,14 @@ def calculate_metrics(df):
     total_sales = df['Sales'].sum()
     total_profit = df['Profit'].sum()
     profit_ratio = df['Profit'].sum() / total_sales
-    return total_sales, total_profit, profit_ratio
+    df['Returns'] = df['Profit'].apply(lambda x: abs(x) if x < 0 else 0) #negative profit
+    total_returns = df['Returns'].sum()
+    loss_ratio = df['Returns'].sum() / total_sales
+    return total_sales, total_profit, profit_ratio,total_returns, loss_ratio
 
 # Load your data
 df = dl.load_data()
-total_sales, total_profit, profit_ratio = calculate_metrics(df)
+total_sales, total_profit, profit_ratio,total_returns, loss_ratio = calculate_metrics(df)
 
 
 
@@ -23,7 +26,9 @@ layout = html.Div([
         html.Div([
             html.H3(f"Total Sales: ${total_sales:,.2f}"),
             html.H3(f"Total Profit: ${total_profit:,.2f}"),
-            html.H3(f"Profit Ratio: {profit_ratio:.2%}")
+            html.H3(f"Total Returns: ${total_returns:,.2f}"),
+            html.H3(f"Profit Ratio: {profit_ratio:.2%}"),
+            html.H3(f"Loss Ratio: ${loss_ratio:.2%}")
         ], className="cards"),
     ]),
     
@@ -55,13 +60,31 @@ layout = html.Div([
                 'data': [{'x': df['Order Date'], 'y': df['Sales'], 'type': 'bar'}],
                 
                 'layout':{
-                'title':'Sales Over Time',
+                'title':'Total Sales Over Time',
                 'xaxis':{
-                    'title':'Years'
+                    'title':'Time'
                 },
                 'yaxis':{
-                    'title':'Sales in Dollars'
+                    'title':'No. of Sales'
                 }
+                }
+            }
+        )
+    ], className="home-graph"),
+
+    html.Div([
+        dcc.Graph(
+            id='profit-overview',
+            figure={
+                'data': [{'x': df['Order Date'], 'y': df['Profit'], 'type': 'bar', 'name': 'Profit'}],
+                'layout': {
+                    'title': 'Total Profit Over Time',
+                    'xaxis': {
+                        'title': 'Time'
+                    },
+                    'yaxis': {
+                        'title': 'Profit'
+                    }
                 }
             }
         )

@@ -1,17 +1,16 @@
 from pages import home, table_view, graph_view
 from dash import html, dcc
 
-# Assume each module returns a layout function or a layout property
-
-#Navigation bar
+# Navigation bar with icons
 navbar = html.Div([
-
-    dcc.Location(id='url', refresh=False), # This component holds the URL information
-
-    dcc.Link('Home', href='/', className='nav-links'),
-    dcc.Link('Table View', href='/table', className='nav-links'),
-    dcc.Link('Graph View', href='/graph', className='nav-links'),
+    dcc.Location(id='url', refresh=False),  # This component holds the URL information
+    html.Div([
+        dcc.Link(html.Div([html.I(className="fas fa-home"), " Home"], className='nav-item'), href='/'),
+        dcc.Link(html.Div([html.I(className="fas fa-table"), " Table View"], className='nav-item'), href='/table'),
+        dcc.Link(html.Div([html.I(className="fas fa-chart-bar"), " Graph View"], className='nav-item'), href='/graph'),
+    ], className='navbar')
 ], className='header')
+
 
 def get_layout(pathname):
     if pathname == '/table':
