@@ -28,16 +28,52 @@ To run this application, follow these steps:
     ```bash
       python3 index.py
 
-## OVER VIEW
 
-### Page 1: Home/ Landing Page
 
-Upon entering the base URL (Localhost) of the app, the user is redirected to the landing page. This page provides an overview of the most recent data (e.g., accumulated Sales or Profit Ratio) and two cards that link to the other pages. Inspiration for this page can be drawn from the Super Sample Superstore Dashboard -> Descriptive View.
+## Overview
 
-### Page 2: Table Page
+This Dash application serves as an interactive data analysis tool for sales data, providing insights through tables and graphical representations. It is designed to facilitate easy navigation, data manipulation, and in-depth analysis across various business metrics such as sales performance, profit ratios, and shipping efficiency.
 
-At the beginning of the page, there is a Dash DataTable containing the sales data described in the introduction. The table is filterable by three dropdowns with properties of your choice. Optionally, include dropdowns that form a hierarchy and interact with each other (e.g., excluding an option if the first dropdown is filled). At the bottom of the page, there are five input fields with properties of your choice and an "Add" button. Clicking "Add" adds the entry to the table above. One of the input fields should serve as a primary key. Optionally, prevent adding duplicated entries.
+### Navigation
 
-### Page 3: Graph Page
+The application consists of three main pages, each accessible via a top-level navigation bar with clear icons representing each page:
 
-On the left side of the page, there is a fitting timeline graph for properties such as Days to Ship, Discount, Profit, Profit Ratio, Quantity, Returns, and Sales. On the right side of the page, there is a Bubble chart. Next to the Bubble chart, include two-axis dropdowns containing the properties mentioned earlier. Selecting one dropdown excludes the option in the other. The dropdowns set the values for the Bubble chart. Add a third dropdown that breaks down the bubble chart and contains properties such as Segment, Ship Mode, Customer Name, Category, Sub-Category, and Product Name. At the top of the page, include a date filter and a granularity dropdown (Week, Month, Quarter, Year). Add a sidebar, which navigates to the three pages and has icons per next to the page title.
+- **Home/Landing Page**: Provides a quick summary of key metrics and direct links to detailed views.
+- **Table Page**: Offers a detailed tabular view of the sales data with interactive filtering and data entry capabilities.
+- **Graph Page**: Displays dynamic charts that allow users to visualize data trends and relationships comprehensively.
+
+### Page Details
+
+#### Home/Landing Page
+
+The landing page is designed to give a quick overview of the most critical data points, like accumulated sales or profit ratios. It features:
+- Summary cards that show key data points.
+- Navigation links to other pages with descriptive icons for intuitive access.
+
+#### Table Page
+
+This page features a comprehensive DataTable that showcases the sales data. Key functionalities include:
+- **Filterable Data**: Users can filter data using dropdown menus that dynamically adjust available options based on previous selections.
+- **Data Entry**: Below the table, users can add new data entries through input fields. An 'Add' button commits the new entries to the table, ensuring data integrity by avoiding duplicate entries for primary keys.
+
+#### Graph Page
+
+Designed for visual data exploration, this page includes:
+- **Timeline Graph**: On the left, displaying trends over time for selected metrics like Sales, Returns, or Profit Ratio.
+- **Bubble Chart**: On the right, which visualizes the relationships between two metrics with additional categorization controlled by user-selected dropdowns.
+- **Data Controls**: At the top, users can filter data based on date ranges and choose data granularity (Week, Month, Quarter, Year) to refine their views.
+
+### Interaction and Data Manipulation
+
+Users can interact with the data in several ways:
+- **Dropdown Menus**: Used for filtering data across the application to allow users to drill down into specific areas of interest.
+- **Input Fields on the Table Page**: Enable the addition of new records directly into the dataset, reflecting immediately in the visualizations if applicable.
+- **Graph Controls**: Users can select different data properties to display and explore data interactions dynamically in the graphs.
+
+### Getting Started
+
+To run the application:
+1. Ensure you have Python and necessary packages (`dash`, `pandas`, `plotly`) installed.
+2. Clone the repository and navigate to the app directory.
+3. Run the command `python3 index.py` to start the server.
+4. Open a web browser and go to `http://127.0.0.1:8050/` to access the app.
