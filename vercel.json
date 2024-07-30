@@ -7,6 +7,6 @@
     { "src": "/(.*)", "dest": "index.py" }
   ],
   "env": {
-    "GUNICORN_CMD": "gunicorn index:server"
+    "GUNICORN_CMD": "gunicorn index:server --bind 0.0.0.0:5000"
   }
 }
