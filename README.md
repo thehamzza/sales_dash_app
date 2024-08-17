@@ -1,6 +1,13 @@
 # Super Store Sales Dash App
 # Created by Muhammad Hamza Shakoor 
 
+![Screenshot 2024-05-06 at 19-57-08 Superstores Dash App](https://github.com/thehamzza/sales_dash_app/assets/45312947/55ccf433-40dd-4c6b-b756-5159c523d930)
+
+![Screenshot 2024-05-06 at 19-57-21 Superstores Dash App](https://github.com/thehamzza/sales_dash_app/assets/45312947/ab6b5d4e-09b2-46c0-abe6-59734fc5d177)
+
+![Screenshot 2024-05-06 at 19-57-30 Superstores Dash App](https://github.com/thehamzza/sales_dash_app/assets/45312947/f1de92be-b0dc-4cfa-8c65-3a9846523e9f)
+
+![Screenshot 2024-05-06 at 20-05-37 Superstores Dash App](https://github.com/thehamzza/sales_dash_app/assets/45312947/6488782f-01ab-4731-a879-0904f1970a7a)
 
 ## Overview
 This Dash application analyzes Superstore sales data. 
@@ -78,13 +85,5 @@ To run the application:
 3. Run the command `python3 index.py` to start the server.
 4. Open a web browser and go to `http://127.0.0.1:8050/` to access the app.
 
-
-   ![Screenshot 2024-05-06 at 19-57-08 Superstores Dash App](https://github.com/thehamzza/sales_dash_app/assets/45312947/55ccf433-40dd-4c6b-b756-5159c523d930)
-
-   ![Screenshot 2024-05-06 at 19-57-21 Superstores Dash App](https://github.com/thehamzza/sales_dash_app/assets/45312947/ab6b5d4e-09b2-46c0-abe6-59734fc5d177)
-
-![Screenshot 2024-05-06 at 19-57-30 Superstores Dash App](https://github.com/thehamzza/sales_dash_app/assets/45312947/f1de92be-b0dc-4cfa-8c65-3a9846523e9f)
-
-![Screenshot 2024-05-06 at 20-05-37 Superstores Dash App](https://github.com/thehamzza/sales_dash_app/assets/45312947/6488782f-01ab-4731-a879-0904f1970a7a)
 
 
